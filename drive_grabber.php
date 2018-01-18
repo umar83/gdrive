@@ -1,8 +1,41 @@
 <?php
 class DriveGrabber {
+	// Variables
+	public $cacheDir = __DIR__ .'/drive_cache/';
+	public $cacheLen = 60 * 60; // 60 Minutes
+	
 	// Get download link
 	function getDownloadLink($fileId) {
-		return $this->parseUrl("https://drive.google.com/uc?id=".urlencode($fileId)."&export=download");
+		$cacheFile	= $this->cacheDir . md5($fileId) . ".cache";
+		$returnUrl	= null;
+		$driveUrl	= "https://drive.google.com/uc?id=".urlencode($fileId)."&export=download";
+		
+		if (file_exists($cacheFile)) {
+			$resource = file_get_contents($cacheFile);
+			$resource = explode('~', $resource);
+			
+			if (is_array($resource) && isset($resource[1]) && (time() - $resource[0]) <= 3600) {
+				$returnUrl = trim($resource[1]);
+			}
+		}
+		
+		if ($returnUrl == null) {
+			$returnUrl = $this->parseUrl($driveUrl);
+			$this->cacheLink($cacheFile, $returnUrl);
+		}
+		
+		return $returnUrl;
+	}
+	
+	function cacheLink($path, $link) {
+		// Create cache directory
+		if (!file_exists($this->cacheDir)) {
+			mkdir($this->cacheDir, 0777, true);
+		}
+		
+		// Create cache file
+		$data = time().'~'.$link;
+		file_put_contents($path, $data);
 	}
 	
 	// Search for download link from drive url
