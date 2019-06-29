@@ -3,7 +3,7 @@
 require_once(__DIR__ .'/drive_grabber.php');
 
 $drive = new DriveGrabber();
-$videoUrl = $drive->getDownloadLink('12F_7TG1V3hriDtgV18mcZDVN90qKdhVQ');
+$videoUrl = $drive->getDownloadLink('1uGxH6AB23ZwYUgY9f1Rn5JMB0YGEXBxJ');
 ?>
 <!doctype html>
 <html>
